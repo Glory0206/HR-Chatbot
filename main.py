@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from rag_chain import get_rag_chain_answer
 
 class HRDocumentRequest(BaseModel):
     document_text: str
+    question: str
 
 # FastAPI 앱 인스턴스 생성
 app = FastAPI()
@@ -10,3 +12,11 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"message": "안녕하세요 HR chatbot입니다."}
+
+@app.post("/ask")
+def ask_question(request: HRDocumentRequest):
+    answer = get_rag_chain_answer(
+        document_text= request.document_text,
+        question=request.question
+    )
+    return{"answer": answer}
